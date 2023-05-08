@@ -7,15 +7,18 @@ import UserData from "./models/UserData.js";
 const app= express();
 app.use(express.json())
 app.use(cors())
-const port = 3001
-const mongoURI='mongodb+srv://rounakgupta120:rounak@cluster0.zu4zx9q.mongodb.net/?retryWrites=true&w=majority'
+dotenv.config()
+const PORT = `${process.env.PORT}` || 6001;
+mongoose.connect(`${process.env.MONGO_URL}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
+  })
+  .catch((error) => console.log(`${error} did not connect`));
 
-   mongoose.connect(mongoURI,{useNewUrlParser:true,useUnifiedTopology: true}).then( (result)=>{
-    app.listen(3002);
-    console.log('connected');
-
- } )
-app.get('/',(req,res)=>{
+  app.get('/',(req,res)=>{
     res.send('hello world');
 })
 app.post('/stats',async(req,res)=>{
@@ -50,7 +53,4 @@ app.get('/getdetails',async(req,res)=>{
     let details=await UserData.find();
     // console.log(details);
     res.send(details)
-})
-app.listen(port,()=>{
-    console.log(`app listening on port ${port}`)
 })
